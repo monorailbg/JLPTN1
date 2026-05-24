@@ -5,8 +5,9 @@ CREATE TABLE IF NOT EXISTS vocabulary (
   meaning TEXT NOT NULL,
   example_jp TEXT,
   example_en TEXT,
-  jlpt_level TEXT DEFAULT 'N1',
-  category TEXT
+  jlpt_level TEXT NOT NULL DEFAULT 'N1',
+  category TEXT,
+  frequency_rank INTEGER
 );
 
 CREATE TABLE IF NOT EXISTS grammar (
@@ -16,7 +17,8 @@ CREATE TABLE IF NOT EXISTS grammar (
   usage TEXT NOT NULL,
   example_jp TEXT,
   example_en TEXT,
-  notes TEXT
+  notes TEXT,
+  formality_level TEXT NOT NULL DEFAULT '中立'
 );
 
 CREATE TABLE IF NOT EXISTS reading_passages (

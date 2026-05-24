@@ -6,6 +6,7 @@ import { extraPassages } from './reading-extra';
 import { extraVocabulary } from './vocab-extra';
 import { ALL_CURATED } from '@/exercises/curated';
 import { generateFillBlankExercises } from '@/exercises/generator';
+import { applyCuratedData } from '@/analysis/frequency-engine';
 
 const DB_PATH = path.join(process.cwd(), 'data', 'jlpt.db');
 
@@ -44,8 +45,36 @@ export function getDb(): Database.Database {
   runMigrations(db);
   seedIfEmpty(db);
   seedExercisesIfEmpty(db);
+  seedFrequencyScoresIfEmpty(db);
 
   return db;
+}
+
+// Pre-populate frequency_scores from curated dataset on first init so the
+// analytics dashboard and past-test reference page work out-of-the-box.
+function seedFrequencyScoresIfEmpty(db: Database.Database) {
+  const count = (db.prepare('SELECT COUNT(*) c FROM frequency_scores').get() as { c: number }).c;
+  if (count > 0) return;
+
+  db.transaction(() => {
+    const runRow = db.prepare(`
+      INSERT INTO analysis_runs (status, sources_attempted, sources_succeeded, items_scored, notes)
+      VALUES ('complete', 0, 0, 0, 'Auto-seeded from curated research dataset on first init.')
+    `).run();
+    const sourceRow = db.prepare(`
+      INSERT INTO exam_sources
+        (run_id, source_type, source_name, source_url, year_from, year_to,
+         http_status, parse_status, items_found)
+      VALUES (?, 'curated', 'Curated N1 Research Dataset', NULL, 2010, 2023, NULL, 'ok', 0)
+    `).run(runRow.lastInsertRowid);
+
+    const scored = applyCuratedData(db, sourceRow.lastInsertRowid as number);
+
+    db.prepare(`UPDATE exam_sources SET items_found = ? WHERE id = ?`)
+      .run(scored, sourceRow.lastInsertRowid);
+    db.prepare(`UPDATE analysis_runs SET items_scored = ? WHERE id = ?`)
+      .run(scored, runRow.lastInsertRowid);
+  })();
 }
 
 // Add new columns to existing tables without losing data.

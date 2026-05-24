@@ -3,16 +3,17 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { BookOpen, Languages, FileText, LayoutDashboard, Brain, FileEdit, BarChart3 } from 'lucide-react';
+import { BookOpen, Languages, FileText, LayoutDashboard, Brain, FileEdit, BarChart3, Archive } from 'lucide-react';
 
 const links = [
-  { href: '/',           label: 'ホーム',         icon: LayoutDashboard },
-  { href: '/vocabulary', label: '語彙',           icon: Languages },
-  { href: '/grammar',    label: '文法',           icon: BookOpen },
-  { href: '/exercises',  label: '演習',           icon: FileEdit },
-  { href: '/reading',    label: '読解',           icon: FileText },
-  { href: '/srs',        label: 'SRS',            icon: Brain },
-  { href: '/analytics',  label: '分析',           icon: BarChart3 },
+  { href: '/',            label: 'ホーム',   icon: LayoutDashboard },
+  { href: '/vocabulary',  label: '語彙',     icon: Languages },
+  { href: '/grammar',     label: '文法',     icon: BookOpen },
+  { href: '/exercises',   label: '演習',     icon: FileEdit },
+  { href: '/reading',     label: '読解',     icon: FileText },
+  { href: '/srs',         label: 'SRS',      icon: Brain },
+  { href: '/analytics',   label: '分析',     icon: BarChart3 },
+  { href: '/past-tests',  label: '過去問',   icon: Archive },
 ];
 
 export default function Nav() {

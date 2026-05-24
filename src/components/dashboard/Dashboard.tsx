@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { DashboardStats } from '@/types';
 import { Flame, Languages, BookOpen, FileText, TrendingUp } from 'lucide-react';
 import AnalysisPanel from './AnalysisPanel';
+import SRSSummaryCard from './SRSSummaryCard';
 
 function StatCard({
   label,
@@ -110,6 +111,11 @@ export default function Dashboard() {
           href="/reading"
           kanji="読"
         />
+      </div>
+
+      {/* SRS summary */}
+      <div className="mb-6">
+        <SRSSummaryCard />
       </div>
 
       {/* Frequency analysis panel */}

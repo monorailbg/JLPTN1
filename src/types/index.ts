@@ -100,6 +100,40 @@ export interface AnalysisStatus {
   } | null;
 }
 
+export type SRSRating = '忘れた' | '難しい' | '普通' | '簡単';
+
+export interface SRSCard {
+  id: number;
+  word: string;
+  reading: string;
+  meaning: string;
+  example_jp: string | null;
+  example_en: string | null;
+  category: string | null;
+  jlpt_level: string;
+  frequency_score: number;
+  exam_count: number;
+  question_count: number;
+  last_seen_year: number | null;
+  // SM-2 state
+  repetitions: number;
+  interval: number;
+  ease_factor: number;
+  next_review_at: string;
+  is_new: number; // 0 | 1 (SQLite boolean)
+}
+
+export interface SRSStats {
+  total_n1_vocab: number;
+  introduced: number;
+  new_cards: number;
+  due_today: number;
+  mature: number;
+  avg_ease: number;
+  reviews_today: number;
+  today_ratings: { rating: string; count: number }[];
+}
+
 export interface FrequencyScoreRow {
   item_type: string;
   item_id: number;

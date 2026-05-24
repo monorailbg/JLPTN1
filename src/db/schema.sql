@@ -57,3 +57,32 @@ CREATE TABLE IF NOT EXISTS streaks (
   date TEXT NOT NULL,
   UNIQUE(user_id, date)
 );
+
+-- Spaced repetition: per-card scheduling state (SM-2)
+CREATE TABLE IF NOT EXISTS srs_cards (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL DEFAULT 'local',
+  item_type TEXT NOT NULL DEFAULT 'vocabulary',
+  item_id INTEGER NOT NULL,
+  repetitions INTEGER NOT NULL DEFAULT 0,
+  interval INTEGER NOT NULL DEFAULT 1,
+  ease_factor REAL NOT NULL DEFAULT 2.5,
+  next_review_at TEXT NOT NULL DEFAULT (date('now')),
+  last_reviewed_at TEXT,
+  UNIQUE(user_id, item_type, item_id)
+);
+
+-- Full review history log for analytics
+CREATE TABLE IF NOT EXISTS srs_reviews (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL DEFAULT 'local',
+  item_type TEXT NOT NULL DEFAULT 'vocabulary',
+  item_id INTEGER NOT NULL,
+  rating TEXT NOT NULL,
+  quality INTEGER NOT NULL,
+  ease_factor_before REAL NOT NULL,
+  ease_factor_after REAL NOT NULL,
+  interval_before INTEGER NOT NULL,
+  interval_after INTEGER NOT NULL,
+  reviewed_at TEXT NOT NULL DEFAULT (datetime('now'))
+);

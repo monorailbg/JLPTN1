@@ -3,13 +3,14 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
-import { BookOpen, Languages, FileText, LayoutDashboard } from 'lucide-react';
+import { BookOpen, Languages, FileText, LayoutDashboard, Brain } from 'lucide-react';
 
 const links = [
-  { href: '/', label: 'ダッシュボード', icon: LayoutDashboard },
-  { href: '/vocabulary', label: '語彙', icon: Languages },
-  { href: '/grammar', label: '文法', icon: BookOpen },
-  { href: '/reading', label: '読解', icon: FileText },
+  { href: '/',           label: 'ダッシュボード', icon: LayoutDashboard },
+  { href: '/vocabulary', label: '語彙',           icon: Languages },
+  { href: '/grammar',    label: '文法',           icon: BookOpen },
+  { href: '/reading',    label: '読解',           icon: FileText },
+  { href: '/srs',        label: 'SRS',            icon: Brain },
 ];
 
 export default function Nav() {

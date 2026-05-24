@@ -31,34 +31,38 @@ export default function AnalysisPanel() {
   const hasScores = (status?.stats?.total_vocab_scored ?? 0) > 0;
 
   return (
-    <div className="ink-border bg-aged-paper/40 rounded-sm overflow-hidden">
+    <div className="rounded-2xl bg-paper border border-hairline overflow-hidden">
       {/* Header row */}
       <button
         onClick={() => setOpen(o => !o)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-aged-paper/60 transition-colors"
+        className="w-full flex items-center justify-between px-5 sm:px-6 py-4 hover:bg-paper-elev transition-colors"
       >
-        <div className="flex items-center gap-2">
-          <TrendingUp size={15} className="text-vermillion" />
-          <span className="text-sm font-medium text-ink">頻出分析 Frequency Analysis</span>
-          {hasScores && (
-            <span className="text-xs text-ink/40">
-              ({status!.stats!.total_vocab_scored}語 · {status!.stats!.total_grammar_scored}文法)
-            </span>
-          )}
+        <div className="flex items-center gap-3">
+          <div className="grid place-items-center w-9 h-9 rounded-xl bg-vermillion/10 text-vermillion">
+            <TrendingUp size={16} strokeWidth={2} />
+          </div>
+          <div className="text-left">
+            <p className="text-[14px] font-semibold text-ink leading-tight">頻出分析</p>
+            <p className="text-[11px] text-ink-3 mt-0.5">
+              {hasScores
+                ? `${status!.stats!.total_vocab_scored}語 · ${status!.stats!.total_grammar_scored}文法`
+                : 'Frequency Analysis'}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           {!hasRun && (
-            <span className="text-xs text-amber-600 border border-amber-300 px-2 py-0.5 rounded-full">未実行</span>
+            <span className="text-[11px] font-semibold text-gold bg-gold/15 px-2 py-1 rounded-full">未実行</span>
           )}
           {hasRun && status?.last_run?.status === 'complete' && (
-            <span className="text-xs text-moss border border-moss/30 px-2 py-0.5 rounded-full">完了</span>
+            <span className="text-[11px] font-semibold text-moss bg-moss/15 px-2 py-1 rounded-full">完了</span>
           )}
-          <span className="text-ink/30 text-xs">{open ? '▲' : '▼'}</span>
+          <span className="text-ink-3 text-xs transition-transform" style={{ transform: open ? 'rotate(180deg)' : 'none' }}>▾</span>
         </div>
       </button>
 
       {open && (
-        <div className="border-t border-ink/10 px-5 py-4 animate-slide-up space-y-4">
+        <div className="border-t border-hairline px-5 sm:px-6 py-5 animate-slide-up space-y-5">
 
           {/* Last run info */}
           {status?.last_run && (
@@ -168,7 +172,7 @@ export default function AnalysisPanel() {
           <button
             onClick={runAnalysis}
             disabled={running}
-            className="flex items-center gap-2 px-4 py-2 bg-vermillion text-white text-sm rounded-sm hover:bg-vermillion/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="btn btn-primary"
           >
             <RefreshCw size={13} className={cn(running && 'animate-spin')} />
             {running ? '分析実行中…' : hasRun ? '再分析する' : '頻出分析を実行する'}

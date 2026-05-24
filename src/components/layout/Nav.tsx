@@ -2,90 +2,120 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { BookOpen, Languages, FileText, LayoutDashboard, Brain, FileEdit, BarChart3, Archive, Menu, X } from 'lucide-react';
+import { BookOpen, Languages, FileText, LayoutDashboard, Brain, FileEdit, BarChart3, Archive } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 
 const links = [
-  { href: '/',            label: 'ホーム',   icon: LayoutDashboard },
-  { href: '/vocabulary',  label: '語彙',     icon: Languages },
-  { href: '/grammar',     label: '文法',     icon: BookOpen },
-  { href: '/exercises',   label: '演習',     icon: FileEdit },
-  { href: '/reading',     label: '読解',     icon: FileText },
-  { href: '/srs',         label: 'SRS',      icon: Brain },
-  { href: '/analytics',   label: '分析',     icon: BarChart3 },
-  { href: '/past-tests',  label: '過去問',   icon: Archive },
+  { href: '/',            label: 'ホーム',  short: 'ホーム',  icon: LayoutDashboard },
+  { href: '/vocabulary',  label: '語彙',    short: '語彙',    icon: Languages },
+  { href: '/grammar',     label: '文法',    short: '文法',    icon: BookOpen },
+  { href: '/exercises',   label: '演習',    short: '演習',    icon: FileEdit },
+  { href: '/reading',     label: '読解',    short: '読解',    icon: FileText },
+  { href: '/srs',         label: 'SRS',     short: 'SRS',     icon: Brain },
+  { href: '/analytics',   label: '分析',    short: '分析',    icon: BarChart3 },
+  { href: '/past-tests',  label: '過去問',  short: '過去問',  icon: Archive },
 ];
 
 export default function Nav() {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header className="border-b border-ink/10 bg-aged-paper/80 backdrop-blur-sm sticky top-0 z-50">
-      <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-14">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-          <span className="font-serif text-2xl text-vermillion font-bold leading-none">日</span>
-          <span className="font-semibold text-ink tracking-wide text-sm hidden xs:inline">JLPT N1</span>
-        </Link>
+    <>
+      {/* ── Top bar (all screens) ─────────────────────────────────────────── */}
+      <header className="sticky top-0 z-40 border-b border-hairline bg-washi/85 backdrop-blur-md safe-top">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-4">
+          {/* Brand */}
+          <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
+            <span className="grid place-items-center w-8 h-8 rounded-xl bg-vermillion text-white font-serif text-base leading-none">日</span>
+            <span className="font-semibold text-ink tracking-tight text-[15px] hidden xs:inline">JLPT N1</span>
+          </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden md:flex items-center gap-0.5 overflow-x-auto">
-          {links.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              className={cn(
-                'flex items-center gap-1.5 px-2.5 py-1.5 rounded text-sm transition-all whitespace-nowrap',
-                pathname === href
-                  ? 'bg-vermillion text-white font-medium'
-                  : 'text-ink/70 hover:text-ink hover:bg-ink/5'
-              )}
-            >
-              <Icon size={14} />
-              <span>{label}</span>
-            </Link>
-          ))}
-        </nav>
+          {/* Desktop: scrollable pill nav */}
+          <nav className="hidden md:flex flex-1 justify-center">
+            <ul className="flex items-center gap-0.5">
+              {links.map(({ href, label, icon: Icon }) => {
+                const active = pathname === href;
+                return (
+                  <li key={href}>
+                    <Link
+                      href={href}
+                      className={cn(
+                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[13px] font-medium transition-all',
+                        active
+                          ? 'bg-vermillion text-white'
+                          : 'text-ink-2 hover:text-ink hover:bg-ink/[0.04]'
+                      )}
+                    >
+                      <Icon size={14} strokeWidth={2} />
+                      <span>{label}</span>
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
 
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          {/* Mobile hamburger */}
-          <button
-            onClick={() => setMobileOpen(o => !o)}
-            className="md:hidden p-2 rounded text-ink/60 hover:text-ink hover:bg-ink/5 transition-colors"
-            aria-label="メニュー"
-          >
-            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
-          </button>
+          <div className="flex items-center gap-1 flex-shrink-0">
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* ── Mobile bottom tab bar ─────────────────────────────────────────── */}
+      <nav
+        className="md:hidden fixed bottom-0 inset-x-0 z-40 border-t border-hairline bg-washi/95 backdrop-blur-md safe-bottom"
+        aria-label="メインナビゲーション"
+      >
+        <ul className="grid grid-cols-5 max-w-md mx-auto px-1 pt-1.5">
+          {links.slice(0, 5).map(({ href, short, icon: Icon }) => {
+            const active = pathname === href;
+            return (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={cn(
+                    'flex flex-col items-center justify-center gap-0.5 py-2 rounded-xl transition-colors',
+                    active
+                      ? 'text-vermillion'
+                      : 'text-ink-3 hover:text-ink-2'
+                  )}
+                >
+                  <Icon size={20} strokeWidth={active ? 2.25 : 1.75} />
+                  <span className="text-[10px] font-medium tracking-tight">{short}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      </nav>
+
+      {/* ── Mobile secondary scroll-bar (for nav items beyond bottom tab) ─ */}
+      <div className="md:hidden border-b border-hairline bg-washi/80 backdrop-blur-sm">
+        <div className="max-w-6xl mx-auto px-3">
+          <ul className="flex gap-1 overflow-x-auto py-2 scrollbar-hide -mx-1 px-1">
+            {links.slice(5).map(({ href, label, icon: Icon }) => {
+              const active = pathname === href;
+              return (
+                <li key={href} className="flex-shrink-0">
+                  <Link
+                    href={href}
+                    className={cn(
+                      'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors whitespace-nowrap',
+                      active
+                        ? 'bg-vermillion text-white'
+                        : 'bg-paper text-ink-2 hover:text-ink'
+                    )}
+                  >
+                    <Icon size={13} strokeWidth={2} />
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
-
-      {/* Mobile dropdown */}
-      {mobileOpen && (
-        <div className="md:hidden border-t border-ink/10 bg-aged-paper/95 backdrop-blur-sm">
-          <nav className="max-w-5xl mx-auto px-4 py-3 grid grid-cols-4 gap-1">
-            {links.map(({ href, label, icon: Icon }) => (
-              <Link
-                key={href}
-                href={href}
-                onClick={() => setMobileOpen(false)}
-                className={cn(
-                  'flex flex-col items-center gap-1 px-2 py-2.5 rounded text-xs transition-all',
-                  pathname === href
-                    ? 'bg-vermillion text-white font-medium'
-                    : 'text-ink/60 hover:text-ink hover:bg-ink/5'
-                )}
-              >
-                <Icon size={18} />
-                <span>{label}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
-    </header>
+    </>
   );
 }

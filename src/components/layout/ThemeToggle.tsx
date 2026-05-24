@@ -5,6 +5,7 @@ import { Moon, Sun } from 'lucide-react';
 
 export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('theme');
@@ -12,6 +13,7 @@ export default function ThemeToggle() {
     const isDark = stored ? stored === 'dark' : prefersDark;
     setDark(isDark);
     document.documentElement.classList.toggle('dark', isDark);
+    setMounted(true);
   }, []);
 
   function toggle() {
@@ -25,9 +27,9 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label={dark ? 'ライトモードに切替' : 'ダークモードに切替'}
-      className="p-2 rounded text-ink/50 hover:text-ink hover:bg-ink/5 transition-colors"
+      className="grid place-items-center w-9 h-9 rounded-full bg-paper border border-hairline text-ink-2 hover:text-ink hover:bg-paper-elev transition-colors"
     >
-      {dark ? <Sun size={15} /> : <Moon size={15} />}
+      {mounted ? (dark ? <Sun size={15} /> : <Moon size={15} />) : <Sun size={15} className="opacity-0" />}
     </button>
   );
 }

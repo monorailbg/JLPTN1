@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_JP, Noto_Serif_JP } from 'next/font/google';
 import './globals.css';
 import Nav from '@/components/layout/Nav';
@@ -22,12 +22,21 @@ export const metadata: Metadata = {
   description: 'Master JLPT N1 vocabulary, grammar, and reading comprehension',
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#faf7f0' },
+    { media: '(prefers-color-scheme: dark)',  color: '#14110d' },
+  ],
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja" suppressHydrationWarning>
       <body className={`${notoSans.variable} ${notoSerif.variable} min-h-screen washi-texture antialiased`}>
         <Nav />
-        <main className="max-w-5xl mx-auto px-4 py-8">{children}</main>
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">{children}</main>
       </body>
     </html>
   );

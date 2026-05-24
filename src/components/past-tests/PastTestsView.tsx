@@ -78,10 +78,17 @@ export default function PastTestsView() {
     <div className="animate-fade-in max-w-5xl mx-auto space-y-6">
 
       {/* Header */}
-      <div className="mb-2">
-        <h1 className="font-serif text-3xl font-bold text-ink hanko-line">過去問データベース</h1>
-        <p className="text-ink/50 text-sm mt-3">Past Test Reference — N1 (2010–2023)</p>
-      </div>
+      <header>
+        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-vermillion mb-2">
+          Past Test Reference
+        </p>
+        <h1 className="font-serif text-[32px] sm:text-[40px] font-bold text-ink leading-[1.05] tracking-tight">
+          過去問データベース
+        </h1>
+        <p className="text-ink-2 mt-2 text-[14px]">
+          N1 (2010–2023) · {data?.total_exams ?? 28} sessions analyzed
+        </p>
+      </header>
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-3">
@@ -109,28 +116,23 @@ export default function PastTestsView() {
       </div>
 
       {/* Filters */}
-      <div className="ink-border bg-aged-paper/40 rounded-sm p-4 flex flex-col sm:flex-row gap-3">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink/40" />
+          <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-3" />
           <input
             type="text"
             placeholder="語彙・文法・読みで検索…"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm bg-aged-paper border border-ink/15 rounded-sm text-ink placeholder:text-ink/30 focus:outline-none focus:border-vermillion/50"
+            className="w-full h-11 pl-10 pr-3 text-[14px] bg-paper border border-hairline rounded-full text-ink placeholder:text-ink-3 focus:outline-none focus:border-vermillion/40"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="segmented self-start sm:self-auto">
           {(['all', 'vocabulary', 'grammar'] as const).map(t => (
             <button
               key={t}
               onClick={() => setTypeFilter(t)}
-              className={cn(
-                'px-3 py-1.5 text-xs rounded-sm border transition-all',
-                typeFilter === t
-                  ? 'bg-vermillion text-white border-vermillion'
-                  : 'border-ink/15 text-ink/60 hover:text-ink hover:border-ink/30'
-              )}
+              className={typeFilter === t ? 'active' : ''}
             >
               {t === 'all' ? 'すべて' : t === 'vocabulary' ? '語彙' : '文法'}
             </button>
@@ -310,13 +312,13 @@ function StatTile({
   icon: typeof BarChart3; iconColor: string; label: string; value: string; sub: string;
 }) {
   return (
-    <div className="ink-border bg-aged-paper/60 rounded-sm p-4">
-      <div className="flex items-center gap-2 mb-1">
-        <Icon size={13} className={iconColor} />
-        <span className="text-xs text-ink/50 uppercase tracking-wide">{label}</span>
+    <div className="rounded-2xl bg-paper border border-hairline p-4 sm:p-5">
+      <div className={`grid place-items-center w-9 h-9 rounded-xl bg-paper-sunken mb-3 ${iconColor}`}>
+        <Icon size={15} strokeWidth={2} />
       </div>
-      <p className="font-serif text-2xl font-bold text-ink">{value}</p>
-      <p className="text-xs text-ink/35 mt-0.5">{sub}</p>
+      <p className="text-[10px] text-ink-3 uppercase tracking-[0.15em] font-medium mb-1">{label}</p>
+      <p className="font-serif text-[24px] sm:text-[28px] font-bold text-ink tabular leading-none">{value}</p>
+      <p className="text-[11px] text-ink-3 mt-1.5">{sub}</p>
     </div>
   );
 }

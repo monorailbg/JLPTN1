@@ -132,17 +132,16 @@ export default function SRSFlashcard() {
   // ── Empty queue ──────────────────────────────────────────────────────────────
   if (!loading && queue.length === 0) {
     return (
-      <div className="max-w-md mx-auto text-center mt-24 animate-fade-in">
-        <Brain size={44} className="mx-auto text-moss mb-5 opacity-50" />
-        <p className="font-serif text-2xl font-bold text-ink mb-2">今日の学習は完了</p>
-        <p className="text-ink/50 text-sm mb-8">
-          レビュー待ちのカードはありません。<br />また明日！
+      <div className="max-w-md mx-auto text-center mt-20 animate-fade-in">
+        <div className="grid place-items-center w-16 h-16 mx-auto rounded-3xl bg-moss/12 text-moss mb-6">
+          <Brain size={28} strokeWidth={1.75} />
+        </div>
+        <p className="font-serif text-[28px] font-bold text-ink mb-2 leading-tight">今日の学習は完了</p>
+        <p className="text-ink-2 text-[14px] mb-8 text-balance">
+          レビュー待ちのカードはありません。<br />また明日。
         </p>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-vermillion text-white rounded-sm hover:bg-vermillion/90 transition-colors text-sm font-medium"
-        >
-          <Home size={14} /> ダッシュボードへ
+        <Link href="/" className="btn btn-primary">
+          <Home size={15} /> ダッシュボードへ
         </Link>
       </div>
     );
@@ -180,21 +179,23 @@ export default function SRSFlashcard() {
     <div className="animate-fade-in max-w-2xl mx-auto">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between mb-4">
+      <header className="flex items-start justify-between mb-5">
         <div>
-          <h1 className="font-serif text-2xl font-bold text-ink hanko-line">間隔反復学習</h1>
-          <p className="text-ink/50 text-xs mt-2">Spaced Repetition · <span className="font-mono">SM-2</span></p>
+          <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-deep-blue mb-1.5">
+            Spaced Repetition · SM-2
+          </p>
+          <h1 className="font-serif text-[28px] font-bold text-ink leading-tight">間隔反復学習</h1>
         </div>
-        <div className="flex flex-col items-end gap-1 mt-1">
-          <span className="text-sm text-ink/40">{index + 1} / {queue.length}</span>
+        <div className="flex flex-col items-end gap-1.5">
+          <span className="text-[13px] text-ink-2 tabular font-medium">{index + 1} / {queue.length}</span>
           {current.is_new === 1
-            ? <span className="text-xs text-moss border border-moss/30 px-1.5 py-0.5 rounded-full">新規</span>
-            : <span className="text-xs text-deep-blue/70 border border-deep-blue/20 px-1.5 py-0.5 rounded-full">
+            ? <span className="text-[11px] font-semibold text-moss bg-moss/12 px-2 py-0.5 rounded-full">新規</span>
+            : <span className="text-[11px] font-semibold text-deep-blue bg-deep-blue/10 px-2 py-0.5 rounded-full">
                 復習 · {current.repetitions}回目
               </span>
           }
         </div>
-      </div>
+      </header>
 
       {/* ── Progress bar ───────────────────────────────────────────────────── */}
       <div className="progress-bar mb-3">
@@ -224,43 +225,47 @@ export default function SRSFlashcard() {
       {!flipped ? (
         /* Front: word only */
         <div
-          className="ink-border bg-aged-paper rounded-sm flex flex-col items-center justify-center p-10 relative cursor-pointer select-none min-h-[240px] hover:shadow-md transition-shadow"
+          className="card-hero flex flex-col items-center justify-center p-10 relative cursor-pointer select-none min-h-[280px] transition-transform active:scale-[0.995]"
           onClick={() => setFlipped(true)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={e => { if (e.key === 'Enter') setFlipped(true); }}
         >
           {current.frequency_score >= 80 && (
-            <span className="absolute top-3 right-3 text-xs text-vermillion font-medium border border-vermillion/30 px-1.5 py-0.5 rounded-sm">
+            <span className="absolute top-4 right-4 text-[11px] font-semibold text-vermillion bg-vermillion/12 px-2 py-1 rounded-full">
               頻出
             </span>
           )}
-          <p className="text-xs text-ink/40 uppercase tracking-widest mb-5">単語</p>
-          <p className="font-serif text-6xl font-bold text-ink mb-4 text-center leading-tight">
+          <p className="text-[10px] text-ink-3 uppercase tracking-[0.2em] mb-6 font-medium">単語</p>
+          <p className="font-serif text-[64px] sm:text-[76px] font-bold text-ink mb-4 text-center leading-[1]">
             {current.word}
           </p>
           {current.category && (
-            <span className="text-xs text-ink/40 border border-ink/10 px-2 py-0.5 rounded-full">
+            <span className="text-[11px] text-ink-2 bg-paper-sunken px-3 py-1 rounded-full">
               {current.category}
             </span>
           )}
-          <p className="text-xs text-ink/25 mt-8">
-            スペースキーまたはタップして答えを見る
+          <p className="text-[11px] text-ink-3 mt-8 tracking-wide">
+            <kbd className="px-1.5 py-0.5 mx-1 text-[10px] rounded bg-paper-sunken border border-hairline">Space</kbd>
+            または タップして答えを見る
           </p>
         </div>
       ) : (
         /* Back: reading + meaning + example */
-        <div className="ink-border bg-deep-blue rounded-sm p-7 text-white animate-slide-up">
-          <div className="text-center mb-5">
-            <p className="font-serif text-4xl font-bold text-white mb-1">{current.word}</p>
-            <p className="font-serif text-2xl text-gold">{current.reading}</p>
+        <div className="rounded-3xl bg-deep-blue p-7 sm:p-8 text-white animate-slide-up shadow-lg">
+          <div className="text-center mb-6">
+            <p className="font-serif text-[44px] font-bold text-white leading-tight mb-1">{current.word}</p>
+            <p className="font-serif text-[22px] text-gold tabular">{current.reading}</p>
           </div>
           <div className="border-t border-white/10 pt-5 mb-4">
-            <p className="text-white/40 text-xs uppercase tracking-widest mb-2">意味</p>
-            <p className="text-lg font-medium text-white leading-snug">{current.meaning}</p>
+            <p className="text-white/50 text-[10px] uppercase tracking-[0.2em] mb-2 font-medium">意味</p>
+            <p className="text-[17px] font-medium text-white leading-snug">{current.meaning}</p>
           </div>
           {current.example_jp && (
-            <div className="bg-white/5 rounded px-4 py-3">
-              <p className="text-sm text-white/80 leading-relaxed">{current.example_jp}</p>
+            <div className="bg-white/[0.06] rounded-2xl px-4 py-3.5">
+              <p className="text-[14px] text-white/85 leading-relaxed">{current.example_jp}</p>
               {current.example_en && (
-                <p className="text-xs text-white/40 mt-1 leading-relaxed">{current.example_en}</p>
+                <p className="text-[12px] text-white/50 mt-1.5 leading-relaxed italic">{current.example_en}</p>
               )}
             </div>
           )}
@@ -269,9 +274,12 @@ export default function SRSFlashcard() {
 
       {/* ── Rating buttons ─────────────────────────────────────────────────── */}
       {flipped && !feedback && (
-        <div className="mt-5 animate-slide-up">
-          <p className="text-xs text-ink/40 text-center mb-3 uppercase tracking-widest">
-            評価 — 1 忘れた · 2 難しい · 3 普通 · 4 簡単
+        <div className="mt-6 animate-slide-up">
+          <p className="text-[11px] text-ink-3 text-center mb-3.5 tracking-wide font-medium">
+            <kbd className="px-1 text-[10px] rounded bg-paper-sunken border border-hairline mx-0.5">1</kbd>忘
+            <kbd className="px-1 text-[10px] rounded bg-paper-sunken border border-hairline mx-0.5 ml-2">2</kbd>難
+            <kbd className="px-1 text-[10px] rounded bg-paper-sunken border border-hairline mx-0.5 ml-2">3</kbd>普
+            <kbd className="px-1 text-[10px] rounded bg-paper-sunken border border-hairline mx-0.5 ml-2">4</kbd>簡
           </p>
           <div className="grid grid-cols-4 gap-2">
             {RATINGS.map(({ rating, idle }) => {
@@ -282,13 +290,13 @@ export default function SRSFlashcard() {
                   onClick={() => rate(rating)}
                   disabled={submitting}
                   className={cn(
-                    'flex flex-col items-center gap-1.5 py-3 px-2 border rounded-sm',
-                    'text-sm font-medium transition-all disabled:opacity-40',
+                    'flex flex-col items-center justify-center gap-1.5 py-3.5 px-2 rounded-2xl border bg-paper',
+                    'text-[14px] font-semibold transition-all disabled:opacity-40 active:scale-[0.97]',
                     idle
                   )}
                 >
                   <span>{rating}</span>
-                  <span className="text-[10px] opacity-60 font-mono">{nextDays}日後</span>
+                  <span className="text-[10px] opacity-60 tabular font-medium">+{nextDays}日</span>
                 </button>
               );
             })}
@@ -299,13 +307,13 @@ export default function SRSFlashcard() {
       {/* ── Feedback flash ─────────────────────────────────────────────────── */}
       {feedback && (
         <div className={cn(
-          'mt-5 px-5 py-4 rounded-sm text-center border animate-slide-up',
+          'mt-5 px-5 py-4 rounded-2xl text-center border animate-slide-up',
           RATINGS.find(r => r.rating === feedback.rating)?.feedback
         )}>
-          <p className="text-sm font-medium text-ink">
+          <p className="text-[14px] font-semibold text-ink">
             {RATINGS.find(r => r.rating === feedback.rating)?.feedbackMsg}
           </p>
-          <p className="text-xs text-ink/50 mt-1 font-mono">次回: {feedback.interval}日後</p>
+          <p className="text-[11px] text-ink-2 mt-1 tabular">次回レビュー: <span className="font-semibold">{feedback.interval}日後</span></p>
         </div>
       )}
     </div>
@@ -338,36 +346,32 @@ function SessionDone({
   ];
 
   return (
-    <div className="max-w-md mx-auto text-center animate-fade-in mt-12">
-      <Brain size={36} className="mx-auto text-moss mb-4 opacity-70" />
-      <p className="font-serif text-5xl font-bold text-ink mb-1">{pct}%</p>
-      <p className="text-ink/50 text-sm mb-1">正解率 Accuracy</p>
-      <p className="text-ink/60 text-sm mb-8">{correct} / {total} 正解（普通 + 簡単）</p>
+    <div className="max-w-md mx-auto text-center animate-fade-in mt-10">
+      <div className="grid place-items-center w-14 h-14 mx-auto rounded-2xl bg-moss/12 text-moss mb-5">
+        <Brain size={24} strokeWidth={1.75} />
+      </div>
+      <p className="font-serif text-[56px] font-bold text-ink leading-none tabular">{pct}%</p>
+      <p className="text-ink-3 text-[11px] uppercase tracking-[0.18em] mt-2 font-medium">正解率 Accuracy</p>
+      <p className="text-ink-2 text-[14px] mt-2 mb-8 tabular">{correct} / {total} 正解（普通 + 簡単）</p>
 
       <div className="grid grid-cols-4 gap-2 mb-8">
         {breakdown.map(({ rating, color, bg }) => (
-          <div key={rating} className={cn('border rounded-sm py-3', bg)}>
-            <p className={cn('text-xl font-bold font-serif', color)}>{counts[rating]}</p>
-            <p className={cn('text-xs mt-0.5', color)}>{rating}</p>
+          <div key={rating} className={cn('border rounded-2xl py-3.5', bg)}>
+            <p className={cn('text-[22px] font-bold font-serif tabular', color)}>{counts[rating]}</p>
+            <p className={cn('text-[11px] mt-1 font-medium', color)}>{rating}</p>
           </div>
         ))}
       </div>
 
-      <p className="text-xs text-ink/40 mb-6">
+      <p className="text-[11px] text-ink-3 mb-6 text-balance">
         次回セッション — 今日中に新規カードが追加される場合があります
       </p>
 
       <div className="flex gap-3 justify-center">
-        <button
-          onClick={onRestart}
-          className="flex items-center gap-2 px-5 py-2.5 bg-vermillion text-white rounded-sm hover:bg-vermillion/90 transition-colors text-sm font-medium"
-        >
+        <button onClick={onRestart} className="btn btn-primary">
           <RotateCcw size={14} /> もう一度
         </button>
-        <Link
-          href="/"
-          className="flex items-center gap-2 px-5 py-2.5 ink-border bg-aged-paper text-ink rounded-sm hover:bg-aged-paper/80 transition-colors text-sm font-medium"
-        >
+        <Link href="/" className="btn btn-secondary">
           <Home size={14} /> ホームへ
         </Link>
       </div>

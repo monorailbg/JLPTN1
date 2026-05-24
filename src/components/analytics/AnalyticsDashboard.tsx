@@ -71,10 +71,17 @@ export default function AnalyticsDashboard() {
     <div className="animate-fade-in max-w-5xl mx-auto space-y-6">
 
       {/* ── Header ─────────────────────────────────────────────────────────── */}
-      <div className="mb-2">
-        <h1 className="font-serif text-3xl font-bold text-ink hanko-line">学習分析</h1>
-        <p className="text-ink/50 text-sm mt-3">Learning Analytics</p>
-      </div>
+      <header>
+        <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-vermillion mb-2">
+          Learning Analytics
+        </p>
+        <h1 className="font-serif text-[32px] sm:text-[40px] font-bold text-ink leading-[1.05] tracking-tight">
+          学習分析
+        </h1>
+        <p className="text-ink-2 mt-2 text-[14px]">
+          進捗・弱点・合格予測スコアを一目で把握。
+        </p>
+      </header>
 
       {/* ── Top row: readiness + KPI tiles ─────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -272,13 +279,13 @@ function KPITile({
   icon: typeof Flame; iconColor: string; label: string; value: string; sublabel: string;
 }) {
   return (
-    <div className="ink-border bg-aged-paper/60 rounded-sm p-4 flex flex-col">
-      <div className="flex items-center gap-2 mb-2">
-        <Icon size={14} className={iconColor} />
-        <span className="text-xs text-ink/60 uppercase tracking-wide">{label}</span>
+    <div className="rounded-2xl bg-paper border border-hairline p-4 flex flex-col">
+      <div className={`grid place-items-center w-9 h-9 rounded-xl bg-paper-sunken mb-3 ${iconColor}`}>
+        <Icon size={15} strokeWidth={2} />
       </div>
-      <p className="font-serif text-3xl font-bold text-ink">{value}</p>
-      <p className="text-xs text-ink/40 mt-1">{sublabel}</p>
+      <p className="text-[10px] text-ink-3 uppercase tracking-[0.15em] font-medium mb-1">{label}</p>
+      <p className="font-serif text-[26px] sm:text-[30px] font-bold text-ink tabular leading-none">{value}</p>
+      <p className="text-[11px] text-ink-3 mt-1.5">{sublabel}</p>
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { DashboardStats } from '@/types';
 import { Flame, Languages, BookOpen, FileText, TrendingUp } from 'lucide-react';
 import AnalysisPanel from './AnalysisPanel';
 import SRSSummaryCard from './SRSSummaryCard';
+import GoalBanner from './GoalBanner';
 
 function StatCard({
   label,
@@ -111,6 +112,11 @@ export default function Dashboard() {
           href="/reading"
           kanji="読"
         />
+      </div>
+
+      {/* Daily goal */}
+      <div className="mb-6">
+        <GoalBanner />
       </div>
 
       {/* SRS summary */}

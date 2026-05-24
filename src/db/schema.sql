@@ -72,6 +72,16 @@ CREATE TABLE IF NOT EXISTS srs_cards (
   UNIQUE(user_id, item_type, item_id)
 );
 
+-- Daily study goals
+CREATE TABLE IF NOT EXISTS study_goals (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id TEXT NOT NULL DEFAULT 'local',
+  daily_reviews INTEGER NOT NULL DEFAULT 20,
+  daily_exercises INTEGER NOT NULL DEFAULT 10,
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(user_id)
+);
+
 -- Full review history log for analytics
 CREATE TABLE IF NOT EXISTS srs_reviews (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

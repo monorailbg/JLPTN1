@@ -2,24 +2,38 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Light mode (default) ───────────────────────────────────────────────── */
 :root {
-  --washi: #f5f0e8;
-  --ink: #1a1208;
-  --vermillion: #c0392b;
-  --gold: #c9a84c;
-  --deep-blue: #1a3a5c;
-  --moss: #4a5e3a;
-  --aged-paper: #ede8d8;
+  --washi:       #f5f0e8;
+  --ink:         #1a1208;
+  --vermillion:  #c0392b;
+  --gold:        #c9a84c;
+  --deep-blue:   #1a3a5c;
+  --moss:        #4a5e3a;
+  --aged-paper:  #ede8d8;
+  --border:      rgba(26, 18, 8, 0.15);
+  --muted:       rgba(26, 18, 8, 0.5);
 }
 
+/* ── Dark mode ──────────────────────────────────────────────────────────── */
+.dark {
+  --washi:      #1a1712;
+  --ink:        #e8e0d0;
+  --aged-paper: #252219;
+  --border:     rgba(232, 224, 208, 0.12);
+  --muted:      rgba(232, 224, 208, 0.45);
+}
+
+/* ── Base ───────────────────────────────────────────────────────────────── */
 body {
   background-color: var(--washi);
   color: var(--ink);
-  font-family: 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  font-family: var(--font-noto-sans), 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .font-serif-jp {
-  font-family: 'Noto Serif JP', 'Hiragino Mincho Pro', 'Yu Mincho', serif;
+  font-family: var(--font-noto-serif), 'Hiragino Mincho Pro', 'Yu Mincho', serif;
 }
 
 .washi-texture {
@@ -28,6 +42,7 @@ body {
     radial-gradient(circle at 80% 20%, rgba(192, 57, 43, 0.04) 0%, transparent 50%);
 }
 
+/* ── Decorative ─────────────────────────────────────────────────────────── */
 .kanji-bg {
   position: relative;
   overflow: hidden;
@@ -36,13 +51,16 @@ body {
   content: attr(data-kanji);
   position: absolute;
   font-size: 12rem;
-  font-family: 'Hiragino Mincho Pro', 'Yu Mincho', serif;
+  font-family: var(--font-noto-serif), 'Hiragino Mincho Pro', 'Yu Mincho', serif;
   color: rgba(26, 18, 8, 0.04);
   font-weight: 700;
   right: -1rem;
   top: -2rem;
   pointer-events: none;
   line-height: 1;
+}
+.dark .kanji-bg::before {
+  color: rgba(232, 224, 208, 0.04);
 }
 
 .hanko-line {
@@ -57,7 +75,7 @@ body {
   margin-top: 0.5rem;
 }
 
-/* Flashcard flip */
+/* ── Flashcard flip ─────────────────────────────────────────────────────── */
 .flashcard {
   perspective: 1000px;
 }
@@ -83,8 +101,9 @@ body {
   transform: rotateY(180deg);
 }
 
+/* ── Utility borders / progress ─────────────────────────────────────────── */
 .ink-border {
-  border: 1.5px solid rgba(26, 18, 8, 0.15);
+  border: 1.5px solid var(--border);
   border-radius: 2px;
 }
 
@@ -93,6 +112,9 @@ body {
   background: rgba(26, 18, 8, 0.1);
   border-radius: 3px;
   overflow: hidden;
+}
+.dark .progress-bar {
+  background: rgba(232, 224, 208, 0.1);
 }
 .progress-fill {
   height: 100%;

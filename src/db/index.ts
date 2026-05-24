@@ -2,6 +2,8 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { vocabulary, grammar, passages } from './seed-data';
+import { ALL_CURATED } from '@/exercises/curated';
+import { generateFillBlankExercises } from '@/exercises/generator';
 
 const DB_PATH = path.join(process.cwd(), 'data', 'jlpt.db');
 
@@ -29,8 +31,17 @@ export function getDb(): Database.Database {
     'utf-8'
   );
   db.exec(analysisSchema);
+
+  // Exercises module schema
+  const exercisesSchema = fs.readFileSync(
+    path.join(process.cwd(), 'src', 'exercises', 'schema.sql'),
+    'utf-8'
+  );
+  db.exec(exercisesSchema);
+
   runMigrations(db);
   seedIfEmpty(db);
+  seedExercisesIfEmpty(db);
 
   return db;
 }
@@ -96,6 +107,35 @@ function seedIfEmpty(db: Database.Database) {
           q.correct_answer, q.explanation
         );
       }
+    }
+  })();
+}
+
+function seedExercisesIfEmpty(db: Database.Database) {
+  const count = (db.prepare('SELECT COUNT(*) as c FROM exercises').get() as { c: number }).c;
+  if (count > 0) return;
+
+  const insert = db.prepare(`
+    INSERT OR IGNORE INTO exercises
+      (type, grammar_pattern, prompt_jp, prompt_en, options_json, correct_index,
+       explanation_jp, explanation_en, nuance_note, source)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  db.transaction(() => {
+    for (const ex of ALL_CURATED) {
+      insert.run(
+        ex.type, ex.grammar_pattern, ex.prompt_jp, ex.prompt_en,
+        JSON.stringify(ex.options), ex.correct_index,
+        ex.explanation_jp, ex.explanation_en, ex.nuance_note, 'curated'
+      );
+    }
+    for (const ex of generateFillBlankExercises(db)) {
+      insert.run(
+        ex.type, ex.grammar_pattern, ex.prompt_jp, ex.prompt_en,
+        JSON.stringify(ex.options), ex.correct_index,
+        ex.explanation_jp, ex.explanation_en, ex.nuance_note, 'generated'
+      );
     }
   })();
 }

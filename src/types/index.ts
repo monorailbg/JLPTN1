@@ -7,6 +7,13 @@ export interface VocabItem {
   example_en: string | null;
   jlpt_level: string;
   category: string | null;
+  frequency_rank: number | null;
+  // Joined from frequency_scores
+  frequency_score: number;
+  exam_count: number;
+  question_count: number;
+  last_seen_year: number | null;
+  score_basis: string | null;
 }
 
 export interface GrammarItem {
@@ -17,6 +24,13 @@ export interface GrammarItem {
   example_jp: string | null;
   example_en: string | null;
   notes: string | null;
+  formality_level: string;
+  // Joined from frequency_scores
+  frequency_score: number;
+  exam_count: number;
+  question_count: number;
+  last_seen_year: number | null;
+  score_basis: string | null;
 }
 
 export interface ReadingPassage {
@@ -57,4 +71,42 @@ export interface DashboardStats {
   readingCorrect: number;
   streakDays: number;
   todayCount: number;
+}
+
+export interface AnalysisStatus {
+  last_run: {
+    id: number;
+    run_at: string;
+    status: string;
+    sources_attempted: number;
+    sources_succeeded: number;
+    items_scored: number;
+    notes: string | null;
+  } | null;
+  source_log: {
+    source_name: string;
+    source_url: string | null;
+    http_status: number | null;
+    parse_status: string;
+    items_found: number;
+    error_message: string | null;
+  }[];
+  stats: {
+    total_vocab_scored: number;
+    total_grammar_scored: number;
+    top_vocab: FrequencyScoreRow[];
+    top_grammar: FrequencyScoreRow[];
+    score_distribution: { bucket: string; count: number }[];
+  } | null;
+}
+
+export interface FrequencyScoreRow {
+  item_type: string;
+  item_id: number;
+  item_text: string;
+  exam_count: number;
+  question_count: number;
+  last_seen_year: number | null;
+  frequency_score: number;
+  score_basis: string;
 }

@@ -22,6 +22,13 @@ export function getDb(): Database.Database {
     'utf-8'
   );
   db.exec(schema);
+
+  // Analysis module schema (analysis_runs, exam_sources, exam_appearances, frequency_scores)
+  const analysisSchema = fs.readFileSync(
+    path.join(process.cwd(), 'src', 'analysis', 'schema.sql'),
+    'utf-8'
+  );
+  db.exec(analysisSchema);
   runMigrations(db);
   seedIfEmpty(db);
 

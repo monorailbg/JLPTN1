@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { DashboardStats } from '@/types';
 import { Flame, Languages, BookOpen, FileText, TrendingUp } from 'lucide-react';
+import AnalysisPanel from './AnalysisPanel';
 
 function StatCard({
   label,
@@ -109,6 +110,11 @@ export default function Dashboard() {
           href="/reading"
           kanji="読"
         />
+      </div>
+
+      {/* Frequency analysis panel */}
+      <div className="mb-6">
+        <AnalysisPanel />
       </div>
 
       {/* Quick start */}

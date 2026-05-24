@@ -2,6 +2,8 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import fs from 'fs';
 import { vocabulary, grammar, passages } from './seed-data';
+import { extraPassages } from './reading-extra';
+import { extraVocabulary } from './vocab-extra';
 import { ALL_CURATED } from '@/exercises/curated';
 import { generateFillBlankExercises } from '@/exercises/generator';
 
@@ -54,6 +56,7 @@ function runMigrations(db: Database.Database) {
   };
   tryAlter('ALTER TABLE vocabulary ADD COLUMN frequency_rank INTEGER');
   tryAlter('ALTER TABLE grammar ADD COLUMN formality_level TEXT NOT NULL DEFAULT "中立"');
+  tryAlter("ALTER TABLE reading_passages ADD COLUMN passage_type TEXT NOT NULL DEFAULT 'informational'");
 }
 
 function seedIfEmpty(db: Database.Database) {
@@ -103,6 +106,56 @@ function seedIfEmpty(db: Database.Database) {
       for (const q of p.questions) {
         insertQuestion.run(
           result.lastInsertRowid,
+          q.question, q.option_a, q.option_b, q.option_c, q.option_d,
+          q.correct_answer, q.explanation
+        );
+      }
+    }
+  })();
+
+  seedExtraPassagesIfNew(db);
+  seedExtraVocabIfNew(db);
+}
+
+function seedExtraVocabIfNew(db: Database.Database) {
+  const insert = db.prepare(`
+    INSERT INTO vocabulary (word, reading, meaning, example_jp, example_en, category, frequency_rank, jlpt_level)
+    VALUES (?, ?, ?, ?, ?, ?, ?, 'N1')
+  `);
+  db.transaction(() => {
+    for (const row of extraVocabulary) {
+      const existing = db.prepare(
+        'SELECT id FROM vocabulary WHERE word = ? AND reading = ?'
+      ).get(row[0], row[1]);
+      if (existing) continue;
+      insert.run(row[0], row[1], row[2], row[3], row[4], row[5], row[6]);
+    }
+  })();
+}
+
+function seedExtraPassagesIfNew(db: Database.Database) {
+  const insertExtraPassage = db.prepare(`
+    INSERT INTO reading_passages (title, content, category, difficulty, passage_type)
+    VALUES (?, ?, ?, 'N1', ?)
+  `);
+  const insertQuestion = db.prepare(`
+    INSERT INTO reading_questions
+      (passage_id, question, option_a, option_b, option_c, option_d, correct_answer, explanation)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+
+  db.transaction(() => {
+    for (const p of extraPassages) {
+      // Skip if already inserted (idempotent across parallel worker seeds).
+      const existing = db.prepare(
+        'SELECT id FROM reading_passages WHERE title = ?'
+      ).get(p.title) as { id: number } | undefined;
+      if (existing) continue;
+
+      const r = insertExtraPassage.run(p.title, p.content, p.category, p.passage_type);
+      for (const q of p.questions) {
+        insertQuestion.run(
+          r.lastInsertRowid,
           q.question, q.option_a, q.option_b, q.option_c, q.option_d,
           q.correct_answer, q.explanation
         );

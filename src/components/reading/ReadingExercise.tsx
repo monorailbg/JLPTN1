@@ -2,20 +2,30 @@
 
 import { useEffect, useState } from 'react';
 import { ReadingPassage, ReadingQuestion } from '@/types';
-import { CheckCircle, XCircle, ChevronRight, RotateCcw } from 'lucide-react';
+import { CheckCircle, XCircle, ChevronRight, RotateCcw, MessageSquareQuote, Newspaper, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import AnnotatedPassage, { type Segment } from './AnnotatedPassage';
 
-type PassageMeta = { id: number; title: string; difficulty: string; category: string | null };
+type PassageType = 'opinion_essay' | 'informational' | 'notice';
+type PassageMeta = { id: number; title: string; difficulty: string; category: string | null; passage_type: PassageType | null };
 type Answer = { questionId: number; selected: string; correct: boolean };
+
+const TYPE_META: Record<PassageType, { label: string; icon: typeof MessageSquareQuote; color: string }> = {
+  opinion_essay: { label: '意見文',  icon: MessageSquareQuote, color: 'text-vermillion' },
+  informational: { label: '情報文',  icon: Newspaper,          color: 'text-deep-blue' },
+  notice:        { label: '告知',    icon: Megaphone,          color: 'text-moss' },
+};
 
 export default function ReadingExercise() {
   const [passages, setPassages] = useState<PassageMeta[]>([]);
   const [selected, setSelected] = useState<PassageMeta | null>(null);
   const [passage, setPassage] = useState<ReadingPassage | null>(null);
   const [questions, setQuestions] = useState<ReadingQuestion[]>([]);
+  const [segments, setSegments] = useState<Segment[]>([]);
   const [answers, setAnswers] = useState<Record<number, Answer>>({});
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [typeFilter, setTypeFilter] = useState<PassageType | 'all'>('all');
 
   useEffect(() => {
     fetch('/api/reading')
@@ -33,6 +43,7 @@ export default function ReadingExercise() {
     const data = await fetch(`/api/reading?passageId=${p.id}`).then(r => r.json());
     setPassage(data.passage);
     setQuestions(data.questions);
+    setSegments(data.segments ?? []);
   };
 
   const selectAnswer = (qId: number, option: string) => {
@@ -66,24 +77,59 @@ export default function ReadingExercise() {
           <h1 className="font-serif text-2xl font-bold text-ink hanko-line">読解練習</h1>
           <p className="text-ink/50 text-xs mt-2">Reading Comprehension</p>
         </div>
-        <p className="text-sm text-ink/50 mb-4">問題を選んでください Select a passage</p>
-        <div className="space-y-3">
-          {passages.map(p => (
+        <p className="text-sm text-ink/50 mb-3">問題を選んでください Select a passage</p>
+
+        {/* Type filter */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {(['all', 'opinion_essay', 'informational', 'notice'] as const).map(t => (
             <button
-              key={p.id}
-              onClick={() => loadPassage(p)}
-              className="w-full ink-border bg-aged-paper/60 p-4 rounded-sm text-left hover:bg-aged-paper hover:shadow-sm transition-all group flex items-center justify-between"
+              key={t}
+              onClick={() => setTypeFilter(t)}
+              className={cn(
+                'text-xs px-3 py-1.5 ink-border rounded-sm transition-colors',
+                typeFilter === t
+                  ? 'bg-vermillion text-white border-vermillion'
+                  : 'bg-aged-paper text-ink/60 hover:text-ink'
+              )}
             >
-              <div>
-                <p className="font-medium text-ink">{p.title}</p>
-                <div className="flex gap-2 mt-1">
-                  {p.category && <span className="text-xs text-ink/40">{p.category}</span>}
-                  <span className="text-xs text-vermillion border border-vermillion/30 px-1.5 rounded-full">{p.difficulty}</span>
-                </div>
-              </div>
-              <ChevronRight size={16} className="text-ink/30 group-hover:text-ink/60 transition-colors" />
+              {t === 'all' ? 'すべて' : TYPE_META[t].label}
             </button>
           ))}
+        </div>
+
+        <div className="space-y-3">
+          {passages
+            .filter(p => typeFilter === 'all' || p.passage_type === typeFilter)
+            .map(p => {
+              const meta = p.passage_type ? TYPE_META[p.passage_type] : null;
+              const TypeIcon = meta?.icon;
+              return (
+                <button
+                  key={p.id}
+                  onClick={() => loadPassage(p)}
+                  className="w-full ink-border bg-aged-paper/60 p-4 rounded-sm text-left hover:bg-aged-paper hover:shadow-sm transition-all group flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    {TypeIcon && (
+                      <TypeIcon size={16} className={cn('shrink-0', meta?.color)} />
+                    )}
+                    <div>
+                      <p className="font-medium text-ink">{p.title}</p>
+                      <div className="flex flex-wrap gap-2 mt-1 items-center">
+                        {meta && (
+                          <span className={cn('text-xs border px-1.5 rounded-full', meta.color, 'border-current/30')}>
+                            {meta.label}
+                          </span>
+                        )}
+                        {p.category && <span className="text-xs text-ink/40">{p.category}</span>}
+                        <span className="text-xs text-vermillion border border-vermillion/30 px-1.5 rounded-full">{p.difficulty}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight size={16} className="text-ink/30 group-hover:text-ink/60 transition-colors" />
+                </button>
+              );
+            })}
         </div>
         {passages.length === 0 && (
           <p className="text-ink/40 text-sm text-center py-12">読解問題がありません</p>
@@ -107,10 +153,20 @@ export default function ReadingExercise() {
         <h1 className="font-serif text-lg font-bold text-ink">{passage?.title}</h1>
       </div>
 
-      {/* Passage */}
-      <div className="ink-border bg-aged-paper rounded-sm p-6 mb-6 leading-loose text-sm text-ink whitespace-pre-wrap font-serif">
-        {passage?.content}
-      </div>
+      {/* Passage with inline vocab popovers */}
+      {segments.length > 0 ? (
+        <>
+          <p className="text-xs text-ink/40 mb-2">
+            <span className="text-deep-blue underline decoration-dotted decoration-deep-blue/40 underline-offset-4">語</span>
+            の語句にカーソルを合わせると意味が表示されます
+          </p>
+          <AnnotatedPassage segments={segments} />
+        </>
+      ) : (
+        <div className="ink-border bg-aged-paper rounded-sm p-6 mb-6 leading-loose text-base text-ink whitespace-pre-wrap font-serif">
+          {passage?.content}
+        </div>
+      )}
 
       {/* Questions */}
       <div className="space-y-6">

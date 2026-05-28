@@ -20,6 +20,13 @@ const notoSerif = Noto_Serif_JP({
 export const metadata: Metadata = {
   title: 'JLPT N1 Trainer',
   description: 'Master JLPT N1 vocabulary, grammar, and reading comprehension',
+  icons: {
+    icon:  [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+    ],
+    shortcut: '/favicon.svg',
+    apple:    '/apple-icon',
+  },
 };
 
 export const viewport: Viewport = {

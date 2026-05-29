@@ -107,26 +107,31 @@ export default function SRSFlashcard() {
     if (!current || submitting) return;
     setSubmitting(true);
 
-    const r    = await fetch('/api/srs/review', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ itemId: current.id, rating }),
-    });
-    const data = await r.json();
+    try {
+      const r    = await fetch('/api/srs/review', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ itemId: current.id, rating }),
+      });
+      const data = await r.json();
 
-    setResults(prev => [...prev, { id: current.id, rating }]);
-    setFeedback({ rating, interval: data.interval });
+      setResults(prev => [...prev, { id: current.id, rating }]);
+      setFeedback({ rating, interval: data.interval ?? 1 });
 
-    setTimeout(() => {
-      setFeedback(null);
-      if (index + 1 >= queue.length) {
-        setDone(true);
-      } else {
-        setIndex(i => i + 1);
-        setFlipped(false);
-      }
+      setTimeout(() => {
+        setFeedback(null);
+        if (index + 1 >= queue.length) {
+          setDone(true);
+        } else {
+          setIndex(i => i + 1);
+          setFlipped(false);
+        }
+        setSubmitting(false);
+      }, 850);
+    } catch {
+      // Network/parse error — unfreeze so the user can retry
       setSubmitting(false);
-    }, 850);
+    }
   }, [current, submitting, index, queue.length]);
 
   // ── Empty queue ──────────────────────────────────────────────────────────────
@@ -227,9 +232,6 @@ export default function SRSFlashcard() {
         <div
           className="card-hero flex flex-col items-center justify-center p-10 relative cursor-pointer select-none min-h-[280px] transition-transform active:scale-[0.995]"
           onClick={() => setFlipped(true)}
-          role="button"
-          tabIndex={0}
-          onKeyDown={e => { if (e.key === 'Enter') setFlipped(true); }}
         >
           {current.frequency_score >= 80 && (
             <span className="absolute top-4 right-4 text-[11px] font-semibold text-vermillion bg-vermillion/12 px-2 py-1 rounded-full">
